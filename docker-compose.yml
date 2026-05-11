@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------
+  # SERVICIO 1: El Backend (API RESTful)
+  # ----------------------------------------
+  mi-servidor-ubb:
+    build: ./backend          # Le dice a Docker en qué carpeta buscar el Dockerfile
+    container_name: servidor-api-ubb
+    ports:
+      - "8000:8000"           # Expone el puerto para que lo veas en tu navegador
+    networks:
+      - red-campus            # Lo conecta al puente virtual
+
+  # ----------------------------------------
+  # SERVICIO 2: El Simulador de la Cámara
+  # ----------------------------------------
+  nodo-simulador:
+    build: ./simulador        # Busca el Dockerfile del simulador
+    container_name: camara-simulada
+    depends_on:
+      - mi-servidor-ubb       # Obliga al simulador a esperar que la API se encienda primero
+    networks:
+      - red-campus            # Lo conecta al mismo puente virtual
+
+# ----------------------------------------
+# LA RED VIRTUAL (Creada automáticamente)
+# ----------------------------------------
+networks:
+  red-campus:
+    driver: bridge
