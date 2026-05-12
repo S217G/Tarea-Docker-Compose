@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel SmartParking UBB</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        h1 { color: #003366; text-align: center;}
+        .dashboard { display: flex; justify-content: center; gap: 20px; margin-top: 30px; }
+        .plaza { padding: 30px; border-radius: 10px; width: 150px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1); font-weight: bold; font-size: 24px; transition: 0.3s; }
+        .disponible { background-color: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+        .ocupado { background-color: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>Monitor en Tiempo Real - Campus Concepción</h1>
+    <div class="dashboard" id="dashboard">
+        </div>
+
+    <script>
+        async function actualizarPanel() {
+            try {
+                // ¡Atención aquí! Le pedimos los datos a la API de FastAPI
+                const respuesta = await fetch('http://localhost:8000/api/estado');
+                const datos = await respuesta.json();
+                
+                const dashboard = document.getElementById('dashboard');
+                dashboard.innerHTML = ''; 
+                
+                for (const [plaza, estado] of Object.entries(datos)) {
+                    const div = document.createElement('div');
+                    div.className = `plaza ${estado.toLowerCase()}`;
+                    div.innerHTML = `${plaza}<br><span style="font-size:14px; font-weight:normal">${estado}</span>`;
+                    dashboard.appendChild(div);
+                }
+            } catch (error) {
+                console.error("Error al conectar con la API", error);
+            }
+        }
+
+        setInterval(actualizarPanel, 2000);
+        actualizarPanel(); 
+    </script>
+</body>
+</html>
